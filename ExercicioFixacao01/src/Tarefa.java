@@ -15,7 +15,6 @@ escolher a opção de sair.
  */
 
 import java.util.ArrayList;
-import java.util.Iterator;
 
 import javax.swing.JOptionPane;
 

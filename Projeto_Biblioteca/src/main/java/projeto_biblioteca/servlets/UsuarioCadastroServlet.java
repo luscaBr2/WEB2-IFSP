@@ -13,6 +13,7 @@ import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import jakarta.servlet.http.HttpSession;
 
 @WebServlet("/UsuarioCadastroServlet")
 public class UsuarioCadastroServlet extends HttpServlet {
@@ -52,6 +53,11 @@ public class UsuarioCadastroServlet extends HttpServlet {
 		if (resultadoSave == "true") {
 			req.setAttribute("result", "true");
 			req.setAttribute("resultMessage", "Usuário cadastrado com sucesso, bem vindo " + usuario.getNome() + " :)");
+			
+			HttpSession session = req.getSession(true); // cria a sessão
+			session.setMaxInactiveInterval(1440);
+			session.setAttribute("usuario", usuario);
+			
 			dispatcher = req.getRequestDispatcher("/homeServlet");
 		} else {
 			req.setAttribute("result", "false");

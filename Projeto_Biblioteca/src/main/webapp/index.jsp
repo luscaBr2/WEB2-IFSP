@@ -168,11 +168,14 @@
 				            <div>Quantidade: ${livro.quantidade}</div>
 				            
 				            <c:choose>
-				                <c:when test="${usuarioLogado == null}">
+				                <c:when test="${usuarioLogado == null && livro.quantidade > 0}">
 				                    <button data-bs-toggle="modal" data-bs-target="#modalAviso" class="btn btn-outline-primary mt-3">Reservar</button>
 				                </c:when>
-				                <c:when test="${usuarioLogado != null}">
+				                <c:when test="${usuarioLogado != null && livro.quantidade > 0}">
 				                    <button class="btn btn-outline-primary mt-3">Reservar</button>
+				                </c:when>
+				                <c:when test="${livro.quantidade <= 0}">
+				                    <button disabled class="btn btn-outline-primary mt-3">Reservar</button>
 				                </c:when>
 				            </c:choose>
 				        </div>

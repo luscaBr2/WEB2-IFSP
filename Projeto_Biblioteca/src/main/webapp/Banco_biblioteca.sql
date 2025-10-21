@@ -7,8 +7,8 @@ CREATE TABLE livros (
     titulo VARCHAR(255) NOT NULL,
     autor VARCHAR(255) NOT NULL,
     ano_publicacao YEAR NOT NULL,
-    genero VARCHAR(100),
-    isbn VARCHAR(20) UNIQUE,
+    categoria VARCHAR(100) NOT NULL,
+    isbn VARCHAR(13) UNIQUE,
     quantidade INT DEFAULT 0,
     img TEXT
 );
@@ -18,9 +18,9 @@ CREATE TABLE usuarios (
     id INT AUTO_INCREMENT PRIMARY KEY,
     nome VARCHAR(255) NOT NULL,
     email VARCHAR(255) NOT NULL UNIQUE,
-    telefone VARCHAR(15),
-    endereco VARCHAR(255),
-    tipo_usuario tinyint COMMENT '1 - Estudante 2 - Professor' DEFAULT 1
+    senha VARCHAR(32) COMMENT 'Criptografado com MD5' NOT NULL,
+    telefone VARCHAR(25),
+    tipo_usuario tinyint COMMENT '1 - Leitor 2 - Admin' DEFAULT 1
 );
 
 -- Tabela de empréstimos
@@ -29,6 +29,7 @@ CREATE TABLE emprestimos (
     id INT AUTO_INCREMENT PRIMARY KEY,
     id_livro INT,
     id_usuario INT,
+    data_criacao DATE,
     data_emprestimo DATE,
     data_devolucao_prevista DATE,
     data_devolucao_real DATE,
@@ -48,33 +49,6 @@ CREATE TABLE reservas (
     status tinyint COMMENT '1 - Ativa 2 - Concluída 3 - Cancelada',
     FOREIGN KEY (id_livro) REFERENCES livros(id),
     FOREIGN KEY (id_usuario) REFERENCES usuarios(id)
-);
-
--- Tabela de avaliações de livros
-CREATE TABLE avaliacoes (
-    id INT AUTO_INCREMENT PRIMARY KEY,
-    id_livro INT,
-    id_usuario INT,
-    nota INT CHECK (nota >= 1 AND nota <= 5),
-    comentario TEXT,
-    data_avaliacao DATE,
-    FOREIGN KEY (id_livro) REFERENCES livros(id),
-    FOREIGN KEY (id_usuario) REFERENCES usuarios(id)
-);
-
--- Tabela de categorias de livros
-CREATE TABLE categorias (
-    id INT AUTO_INCREMENT PRIMARY KEY,
-    nome_categoria VARCHAR(100) NOT NULL
-);
-
--- Tabela de livros e categorias (relacionamento muitos para muitos)
-CREATE TABLE livros_categorias (
-    id_livro INT,
-    id_categoria INT,
-    PRIMARY KEY (id_livro, id_categoria),
-    FOREIGN KEY (id_livro) REFERENCES livros(id),
-    FOREIGN KEY (id_categoria) REFERENCES categorias(id)
 );
 
 -- Tabela de multas

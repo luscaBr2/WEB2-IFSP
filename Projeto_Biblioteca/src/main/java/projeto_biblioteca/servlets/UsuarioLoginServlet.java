@@ -14,12 +14,20 @@ import projeto_biblioteca.model.Usuario;
 import projeto_biblioteca.utils.DataSourceSearcher;
 import projeto_biblioteca.utils.PasswordEncoder;
 
+import jakarta.servlet.http.HttpSession;
+
 @WebServlet("/UsuarioLoginServlet")
 public class UsuarioLoginServlet extends HttpServlet {
 	private static final long serialVersionUID = 1L;
 
 	public UsuarioLoginServlet() {
 		super();
+	}
+	
+	@Override
+	protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
+		// TODO Auto-generated method stub
+		super.doGet(req, resp);
 	}
 
 	@Override
@@ -30,23 +38,27 @@ public class UsuarioLoginServlet extends HttpServlet {
 
 		UsuarioDAO usuarioDAO = new UsuarioDAO(DataSourceSearcher.getInstance().getDataSource());
 
-		RequestDispatcher dispatcher = null;
-
 		Optional<Usuario> optional = usuarioDAO.getUserByEmailAndPassword(email, PasswordEncoder.encode(senha));
 		
 		Usuario usuarioLogado = optional.isPresent() ? optional.get() : null;
 				
 		if(usuarioLogado != null) {
+			
 			// deu certo o login
 			req.setAttribute("result", "true");
 			req.setAttribute("resultMessage", "Usuario Logado com sucesso");
-			req.setAttribute("usuarioLogado", usuarioLogado);
+			//req.setAttribute("usuarioLogado", usuarioLogado);
+			
+			HttpSession session = req.getSession(true); // cria a sessão
+			session.setMaxInactiveInterval(1440);
+			session.setAttribute("usuario", usuarioLogado);
 		} else {
 			req.setAttribute("result", "false");
 			req.setAttribute("resultMessage", "Email e senha não encontrados, revise os campos");
 		}
 		
-		dispatcher = req.getRequestDispatcher("/index.jsp");
+		// volta pro index de qualquer jeito, porém com o resultMessage
+		RequestDispatcher dispatcher = req.getRequestDispatcher("/homeServlet");
 		dispatcher.forward(req, resp);
 
 	}

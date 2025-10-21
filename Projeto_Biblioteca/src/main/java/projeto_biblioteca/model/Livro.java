@@ -8,13 +8,24 @@ public class Livro {
 	private Integer id; // identificador no banco
 	private String titulo;
     private String autor;
-    private Date ano_publicacao;
-    private Integer genero;
+    private Integer ano_publicacao;
     private String isbn; // único
     private Integer quantidade;
-    private String img;
-    private ArrayList<String> categorias;
+    private String categoria;
+    private String imageURL;
     
+	public String getCategoria() {
+		return categoria;
+	}
+	public void setCategoria(String categoria) {
+		this.categoria = categoria;
+	}
+	public String getImageURL() {
+		return imageURL;
+	}
+	public void setImageURL(String imageURL) {
+		this.imageURL = imageURL;
+	}
 	public Integer getId() {
 		return id;
 	}
@@ -33,17 +44,11 @@ public class Livro {
 	public void setAutor(String autor) {
 		this.autor = autor;
 	}
-	public Date getAno_publicacao() {
+	public Integer getAno_publicacao() {
 		return ano_publicacao;
 	}
-	public void setAno_publicacao(Date ano_publicacao) {
+	public void setAno_publicacao(Integer ano_publicacao) {
 		this.ano_publicacao = ano_publicacao;
-	}
-	public Integer getGenero() {
-		return genero;
-	}
-	public void setGenero(Integer genero) {
-		this.genero = genero;
 	}
 	public String getIsbn() {
 		return isbn;
@@ -56,17 +61,5 @@ public class Livro {
 	}
 	public void setQuantidade(Integer quantidade) {
 		this.quantidade = quantidade;
-	}
-	public String getImg() {
-		return img;
-	}
-	public void setImg(String img) {
-		this.img = img;
-	}
-	public ArrayList<String> getCategorias() {
-		return categorias;
-	}
-	public void setCategorias(ArrayList<String> categorias) {
-		this.categorias = categorias;
 	}
 }

@@ -1,6 +1,6 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8"
 	pageEncoding="UTF-8"
-	import = "java.util.List,projeto_biblioteca.model.Usuario"%>
+	import = "java.util.List,projeto_biblioteca.model.Usuario,jakarta.servlet.http.HttpSession,java.util.List,projeto_biblioteca.model.Livro"%>
 <%@ taglib prefix="c" uri="jakarta.tags.core"%>
 <%@ taglib prefix="fn" uri="jakarta.tags.functions"%>
 <!doctype html>
@@ -13,16 +13,25 @@
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css" rel="stylesheet"
         integrity="sha384-sRIl4kxILFvY47J16cr9ZwB07vP4J8+LH7qKQnuqkuIAvNWLzeN8tE5YBujZqJLB" crossorigin="anonymous">
 </head>
+
 <body>
 	<%
+		// pega o valor que tiver na session, se não houver nada fica null
+		Usuario usuarioLogado = (Usuario)session.getAttribute("usuario");
+	
+		List<Livro> livros = (List<Livro>) request.getAttribute("livros");
 		String result = (String)request.getAttribute("result"); 
 		String resultMessage = (String)request.getAttribute("resultMessage");
 		
-		Usuario usuarioLogado = null;
+		result = (String)request.getAttribute("result");
+		resultMessage = (String)request.getAttribute("resultMessage");
 		
 		// verifica se o usuário logou
 		if(resultMessage == "Usuario Logado com sucesso"){
-			usuarioLogado = (Usuario)request.getAttribute("usuarioLogado");
+			
+			// atualiza o usuarioLogado para a informação que foi criada no LoginServlet dentro da session
+			usuarioLogado = (Usuario)session.getAttribute("usuario");
+			
 			resultMessage = "Usuario Logado com sucesso, bem vindo "+usuarioLogado.getNome() + " :)"; 
 		}
 	%>
@@ -145,41 +154,38 @@
     <main id="main-content">
         <!-- Página Inicial -->
         <div id="dashboard-content" class="content-section">
-            <div class="card-livro d-flex align-items-center">
-                <img class="me-3" src="https://placehold.co/200x300" alt="capa do livro">
-                <div>
-                    <h3 class="titulo-livro"><strong>Harry Potter e as Relíquias da Morte</strong></h3>
-                    <div>Autor: Nome do Autor</div>
-                    <div>Ano: 2023</div>
-                    <div>Gênero: Ficção</div>
-                    <div>Quantidade: 2/5</div>
-                    <button class="btn btn-outline-primary mt-3">Reservar</button>
-                </div>
-            </div>
-
-            <div class="card-livro d-flex align-items-center">
-                <img class="me-3" src="https://placehold.co/200x300" alt="capa do livro">
-                <div>
-                    <h3 class="titulo-livro"><strong>Harry Potter e as Relíquias da Morte</strong></h3>
-                    <div>Autor: Nome do Autor</div>
-                    <div>Ano: 2023</div>
-                    <div>Gênero: Ficção</div>
-                    <div>Quantidade: 2/5</div>
-                    <button class="btn btn-outline-primary mt-3">Reservar</button>
-                </div>
-            </div>
-
-            <div class="card-livro d-flex align-items-center">
-                <img class="me-3" src="https://placehold.co/200x300" alt="capa do livro">
-                <div>
-                    <h3 class="titulo-livro"><strong>Harry Potter e as Relíquias da Morte</strong></h3>
-                    <div>Autor: Nome do Autor</div>
-                    <div>Ano: 2023</div>
-                    <div>Gênero: Ficção</div>
-                    <div>Quantidade: 2/5</div>
-                    <button class="btn btn-outline-primary mt-3">Reservar</button>
-                </div>
-            </div>
+                        
+            <c:if test="${livros != null}">
+            	<c:forEach var="livro" items="${livros}">
+				    <div class="card-livro d-flex align-items-center">
+				        <!-- Acessando a URL da imagem -->
+				        <img class="me-3" src="${livro.imageURL}" alt="capa do livro">
+				        <div>
+				            <h3 class="titulo-livro"><strong>${livro.titulo}</strong></h3>
+				            <div>Autor: ${livro.autor}</div>
+				            <div>Ano: ${livro.ano_publicacao}</div>
+				            <div>Categoria: ${livro.categoria}</div>
+				            <div>Quantidade: ${livro.quantidade}</div>
+				            
+				            <c:choose>
+				                <c:when test="${usuarioLogado == null}">
+				                    <button data-bs-toggle="modal" data-bs-target="#modalAviso" class="btn btn-outline-primary mt-3">Reservar</button>
+				                </c:when>
+				                <c:when test="${usuarioLogado != null}">
+				                    <button class="btn btn-outline-primary mt-3">Reservar</button>
+				                </c:when>
+				            </c:choose>
+				        </div>
+				    </div>
+				</c:forEach>
+            	
+            </c:if>
+            
+            <c:if test="${livros == null}">
+            	<h2>Nenhum livro encontrado</h2>
+            </c:if>
+            
+            
 
         </div>
 
@@ -240,7 +246,46 @@
 		            </div>
 				</c:when>
 				<c:when test="${usuarioLogado != null}">
-					Meu perfil
+					<div class="d-flex gap-4 flex-wrap justify-content-center align-items-start">
+					
+		                <!-- Form para cadastrar -->
+		                <form action="UsuarioUpdateServlet" method="post" class="form" id="formCadastro">
+		                    <p class="title">Editar perfil</p>
+		                    
+		                    <input value="<%=usuarioLogado.getTipo_usuario() %>" name="tipo_usuario" id="tipo_usuario" type="hidden">
+							<input value="<%=usuarioLogado.getEmail() %>" name="emailOriginal" id="emailOriginal" type="hidden">
+									
+		                    <label>
+		                        <input value="<%=usuarioLogado.getNome() %>" name="nome" id="nome" required type="text" class="input">
+		                        <span>Nome completo</span>
+		                    </label>
+		
+		                    <label>
+		                    	<input value="<%= usuarioLogado.getTelefone() %>" name="telefone" id="telefone" required type="number" class="input">
+		                        <span>Telefone</span>
+		                    </label>
+		
+		                    <label>
+		                        <input value="<%=usuarioLogado.getEmail() %>" name="email" id="email" required type="email" class="input">
+		                        <span>Email</span>
+		                    </label>
+		
+		                    <label>
+		                        <input name="senha" id="senha" required type="password" class="input">
+		                        <span>Senha</span>
+		                    </label>
+		                    <label>
+		                        <input id="confirmarSenha" required type="password" class="input">
+		                        <span id="spanConfirmarSenha">Confirmar Senha</span>
+		                    </label>
+		                    <button type=submit class="btn btn-outline-primary">Atualizar dados</button>		                    
+		                </form>
+		                
+		                <form action="logout" method="get" class="form">
+		                	<button class="btn btn-outline-danger">Encerrar sessão</button>
+		                </form>
+		                
+		            </div>
 				</c:when>
 			</c:choose>
             
@@ -317,10 +362,106 @@
 
         <div id="admin-content" class="content-section" style="display: none;">
             <h2 class="title">Administração</h2>
-            <p>Conteúdo administrativo aqui.</p>
+            <c:if test="${usuarioLogado != null}">
+					<div class="d-flex gap-4 flex-wrap justify-content-center align-items-start">
+		                <form action="LivroCadastroServlet" method="post" class="form">
+		                    <p class="title">Cadastrar livro</p>
+		                    
+		                    <label>
+		                        <input name="titulo" id="titulo" required type="text" class="input">
+		                        <span>Título</span>
+		                    </label>
+		
+		                    <label>
+		                        <input name="autor" id="autor" required type="text" class="input">
+		                        <span>Autor</span>
+		                    </label>
+		
+		                    <label>
+		                        <input name="ano_publicacao" id="ano_publicacao" required type="number" class="input">
+		                        <span>Ano publicação</span>
+		                    </label>
+		
+		                    <label>
+		                        <input max="9999999999999" name="isbn" id="isbn" required type="number" class="input">
+		                        <span>IBSN</span>
+		                    </label>
+		                    
+		                    <label>
+		                        <input name="quantidade" id="quantidade" required type="number" class="input">
+		                        <span>Quantidade em estoque</span>
+		                    </label>
+		                    
+		                    <label>
+		                        <input name="categoria" id="categoria" required type="text" class="input">
+		                        <span>Categoria</span>
+		                    </label>
+		                    
+		                    <label>
+		                        <input name="imageURL" id="imageURL" required type="text" class="input">
+		                        <span>Coloque o link da imagem</span>
+		                    </label>
+		                    
+						    <img id="image" src="" alt="Imagem aparecerá aqui" style="display:none; width: 100%; max-width: 400px;">
+		                    
+		                    <button class="btn btn-outline-primary">Enviar</button>
+		                    
+		                </form>
+		                
+		                <form action="UsuarioCadastroServlet" method="post" class="form" id="formCadastro">
+		                    <p class="title">Criar usuário admin</p>
+		                    
+		                    <!-- TIPO = 2 para ser admin -->
+		                    <input name="tipo_usuario" id="tipo_usuario" type="hidden" value="2">
+		
+		                    <label>
+		                        <input name="nome" id="nome" required type="text" class="input">
+		                        <span>Nome completo</span>
+		                    </label>
+		
+		                    <label>
+		                        <input name="telefone" id="telefone" required type="number" class="input">
+		                        <span>Telefone</span>
+		                    </label>
+		
+		                    <label>
+		                        <input name="email" id="email" required type="email" class="input">
+		                        <span>Email</span>
+		                    </label>
+		
+		                    <label>
+		                        <input name="senha" id="senha" required type="password" class="input">
+		                        <span>Senha</span>
+		                    </label>
+		                    <label>
+		                        <input id="confirmarSenha" required type="password" class="input">
+		                        <span id="spanConfirmarSenha">Confirmar Senha</span>
+		                    </label>
+		                    <button class="btn btn-outline-primary">Enviar</button>
+		                </form>
+		            </div>
+				</c:if>
         </div>
     </main>
-
+    
+    <div class="modal" id="modalAviso" tabindex="-1">
+	  	<div class="modal-dialog">
+	    	<div class="modal-content">
+		      	<div class="modal-header">
+		        	<h5 class="modal-title">Aviso</h5>
+		       	 	<button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+		      	</div>
+		      	<div class="modal-body">
+		        	<p>Entre com sua conta para emprestar um livro</p>
+		      	</div>
+		      	<div class="modal-footer">
+			        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Fechar</button>
+			        <button type="button" class="btn btn-primary" data-bs-dismiss="modal" onclick="document.getElementById('profile').click()">Entrar</button>
+			    </div>
+	    	</div>
+	  	</div>
+	</div>
+    
     <script src="index.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.8/dist/umd/popper.min.js"
         integrity="sha384-I7E8VVD/ismYTF4hNIPjVp/Zjvgyol6VFvRkX/vR+Vc4jQkC+hVqc2pM8ODewa9r"

@@ -1,0 +1,183 @@
+Criar projeto web no eclipse
+
+Criar projeto web dinamico com JSP
+
+Botão direito no projeto > Configure > Converder para proj maven
+
+Group Id: br.edu.ifspcjo.ads.cjoweb2
+Artifact Id: <nomeProjeto>
+Version: manter
+Packaging: war
+Name: <nomeProjeto>
+Description: 
+
+========================================================
+
+- Alterar o arquivo pom.xml:
+
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
+	<modelVersion>4.0.0</modelVersion>
+	<groupId>br.edu.ifspcjo.ads.cjoweb2</groupId>
+	<artifactId>Project1</artifactId>
+	<version>0.0.1-SNAPSHOT</version>
+	<packaging>war</packaging>
+	<name>Project1</name>
+	<description>Segundo aplicativo Java Web</description>
+	<properties>
+		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+	</properties>
+	<dependencies>
+		<!--
+		https://mvnrepository.com/artifact/jakarta.servlet/jakarta.servlet-api -->
+		<dependency>
+			<groupId>jakarta.servlet</groupId>
+			<artifactId>jakarta.servlet-api</artifactId>
+			<version>6.0.0</version>
+			<scope>provided</scope>
+		</dependency>
+	</dependencies>
+	<build>
+		<plugins>
+			<plugin>
+				<artifactId>maven-compiler-plugin</artifactId>
+				<version>3.13.0</version>
+				<configuration>
+					<release>21</release>
+				</configuration>
+			</plugin>
+			<plugin>
+				<artifactId>maven-war-plugin</artifactId>
+				<version>3.2.3</version>
+			</plugin>
+		</plugins>
+	</build>
+</project>
+
+========================================================
+
+- Alterar o arquivo pom.xml:
+
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
+	<modelVersion>4.0.0</modelVersion>
+	<groupId>br.edu.ifspcjo.ads.cjoweb2</groupId>
+	<artifactId>Project3</artifactId>
+	<version>0.0.1-SNAPSHOT</version>
+	<packaging>war</packaging>
+	<name>Project3</name>
+	<description>Primeiro projeto com JSP</description>
+	<properties>
+		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+	</properties>
+	<dependencies>
+		<!--
+		https://mvnrepository.com/artifact/jakarta.servlet/jakarta.servlet-api -->
+		<dependency>
+			<groupId>jakarta.servlet</groupId>
+			<artifactId>jakarta.servlet-api</artifactId>
+			<version>6.0.0</version>
+			<scope>provided</scope>
+		</dependency>
+	</dependencies>
+	<build>
+		<plugins>
+			<plugin>
+				<artifactId>maven-compiler-plugin</artifactId>
+				<version>3.13.0</version>
+				<configuration>
+					<release>21</release>
+				</configuration>
+			</plugin>
+			<plugin>
+				<artifactId>maven-war-plugin</artifactId>
+				<version>3.2.3</version>
+			</plugin>
+		</plugins>
+	</build>
+</project>
+
+========================================================
+
+- Criar o arquivo index.jsp dentro da pasta src/main/webapp:
+
+<%@ page language="java" contentType="text/html; charset=UTF-8"
+    pageEncoding="UTF-8"%>
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+	<meta charset="UTF-8">
+	<title>Cadastro de Pessoas</title>
+	<style type="text/css">
+		textarea {
+			display: block;
+			margin: 20px 10px;
+		}
+	</style>
+</head>
+<body>
+	<form action="PersonServlet" method="post">
+		<label for="people">Dados das pessoas:</label>
+		<textarea rows="10" cols="80" name="people" id="people">
+		</textarea>
+		<input type="submit" value="Enviar">
+	</form>
+</body>
+</html>
+
+========================================================
+
+- Criar o arquivo result.jsp dentro da pasta src/main/webapp:
+
+<%@ page language="java" contentType="text/html; charset=UTF-8"
+    pageEncoding="UTF-8" 
+    import="java.util.List,br.edu.ifspcjo.ads.cjoweb2.project3.model.Person"%>
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+	<meta charset="UTF-8">
+	<title>Lista das Pessoas Cadastradas</title>
+</head>
+<body>
+	<%
+		List<Person> peopleList =
+			(List<Person>)request.getAttribute("peopleList");
+	%>
+	<table>
+		<thead>
+			<tr>
+				<th>Nome</th>
+				<th>CPF</th>
+				<th>E-mail</th>
+			</tr>
+		</thead>
+		<tbody>
+			<%
+				for(Person person: peopleList){
+			%>
+				<tr>
+					<td><%= person.getName() %></td>
+					<td><%= person.getCpf() %></td>
+					<td><%= person.getEmail() %></td>
+				</tr>
+			<%
+				}
+			%>
+		</tbody>
+	</table>
+</body>
+</html>
+
+========================================================
+
+- Alterar o arquivo web.xml (está dentro da pasta webapp/WEB-INF):
+
+<?xml version="1.0" encoding="UTF-8"?>
+<web-app id="WebApp_ID" version="2.4" xmlns="http://java.sun.com/xml/ns/j2ee" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://java.sun.com/xml/ns/j2ee http://java.sun.com/xml/ns/j2ee/web-app_2_4.xsd">
+	<display-name>Project3</display-name>
+	<welcome-file-list>
+		<welcome-file>index.jsp</welcome-file>
+	</welcome-file-list>
+</web-app>

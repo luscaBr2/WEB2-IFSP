@@ -1,0 +1,9 @@
+Nomes de classes começando em maiusculo e métodos em minusculos
+
+se for composto, usar letras maiusculas a partir da segunda palavra
+
+exemplo:
+
+class ClasseBemLoka
+
+var resultadoFinal

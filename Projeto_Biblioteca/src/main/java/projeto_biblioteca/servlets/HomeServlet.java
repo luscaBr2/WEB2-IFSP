@@ -55,7 +55,7 @@ public class HomeServlet extends HttpServlet {
 		    }
 		}
  
-		RequestDispatcher dispatcher = req.getRequestDispatcher("/index.jsp");
+		RequestDispatcher dispatcher = req.getRequestDispatcher("index.jsp");
 		dispatcher.forward(req, resp);
 	}
 }

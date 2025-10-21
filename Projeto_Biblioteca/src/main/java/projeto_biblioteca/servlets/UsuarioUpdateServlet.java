@@ -53,7 +53,11 @@ public class UsuarioUpdateServlet extends HttpServlet {
 		
 		if (resultadoUpdate == "true") {
 			req.setAttribute("result", "true");
-			req.setAttribute("resultMessage", "Cadastro editado com sucesso, realize o login novamente");
+			req.setAttribute("resultMessage", "Cadastro editado com sucesso");
+			
+			HttpSession session = req.getSession(true); // cria a sessão
+			session.setMaxInactiveInterval(1440);
+			session.setAttribute("usuario", usuario);
 			
 			dispatcher = req.getRequestDispatcher("/homeServlet");
 		} else {
